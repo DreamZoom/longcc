@@ -1,6 +1,6 @@
 package com.cloud.ying.longcc.generator;
 
-import com.cloud.ying.longcc.scanners.*;
+import com.cloud.ying.longcc.regular.*;
 
 public class NFAConverter {
 

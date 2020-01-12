@@ -4,7 +4,7 @@ import com.cloud.ying.longcc.parser.Parser;
 import com.cloud.ying.longcc.parser.TokenParser;
 import com.cloud.ying.longcc.generator.NFAConverter;
 import com.cloud.ying.longcc.generator.NFAModel;
-import com.cloud.ying.longcc.scanners.RegularExpression;
+import com.cloud.ying.longcc.regular.RegularExpression;
 
 import java.util.function.Function;
 

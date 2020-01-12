@@ -3,11 +3,12 @@ package com.cloud.ying.longcc;
 import com.cloud.ying.longcc.parser.Parser;
 import com.cloud.ying.longcc.parser.ParseContext;
 import com.cloud.ying.longcc.parser.WapperParser;
-import com.cloud.ying.longcc.scanners.RegularExpression;
-import com.cloud.ying.longcc.scanners.RegularExpressionBuilder;
+import com.cloud.ying.longcc.regular.RegularExpression;
+import com.cloud.ying.longcc.regular.RegularExpressionBuilder;
 import org.junit.Test;
 
 import java.util.List;
+import java.util.regex.Pattern;
 
 public class LexiconTest {
 
@@ -108,7 +109,7 @@ public class LexiconTest {
 
     @Test
     public void testTime(){
-
+        Pattern.matches("","");
 
         long startTime=System.currentTimeMillis();  //获取开始时间
         int count = 0;

@@ -1,7 +1,7 @@
 package com.cloud.ying.longcc;
 
 import com.cloud.ying.longcc.generator.*;
-import com.cloud.ying.longcc.scanners.RegularExpression;
+import com.cloud.ying.longcc.regular.RegularExpression;
 
 import java.util.ArrayList;
 import java.util.HashMap;

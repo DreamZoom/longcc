@@ -1,4 +1,4 @@
-package com.cloud.ying.longcc.scanners;
+package com.cloud.ying.longcc.regular;
 
 import java.util.HashSet;
 import java.util.List;
