@@ -1,31 +1,15 @@
 package com.cloud.ying.longcc.regular;
 
-import java.util.HashSet;
-import java.util.List;
-
+/**
+ * 克林星运算表达式
+ */
 public class RegularKleeneStarExpression extends RegularExpression {
-
-    public  RegularKleeneStarExpression(RegularExpression regularExpression){
-        innerExpression = regularExpression;
-    }
-    public RegularExpression getInnerExpression() {
-        return innerExpression;
+    public RegularExpression getExpression() {
+        return expression;
     }
 
-    public void setInnerExpression(RegularExpression innerExpression) {
-        this.innerExpression = innerExpression;
-    }
-
-    private RegularExpression innerExpression;
-
-
-    @Override
-    public HashSet<Character> GetUncompactableCharSet() {
-        return innerExpression.GetUncompactableCharSet();
-    }
-
-    @Override
-    public List<HashSet<Character>> GetCompactableCharSets() {
-        return innerExpression.GetCompactableCharSets();
+    private RegularExpression expression;
+    public RegularKleeneStarExpression(RegularExpression expression){
+        this.expression=expression;
     }
 }

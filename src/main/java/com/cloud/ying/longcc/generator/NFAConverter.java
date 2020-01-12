@@ -2,32 +2,23 @@ package com.cloud.ying.longcc.generator;
 
 import com.cloud.ying.longcc.regular.*;
 
-public class NFAConverter {
+import java.util.List;
 
-    CharMapping charMapping;
-    public  NFAConverter(CharMapping charMapping){
-        this.charMapping = charMapping;
-    }
+public class NFAConverter {
 
     public NFAModel Convert(RegularExpression expression)
     {
         if(expression instanceof RegularAlternationExpression){
             return  ConvertAlternation((RegularAlternationExpression)expression);
         }
-        if(expression instanceof RegularSymbolExpression){
-            return  ConvertSymbol((RegularSymbolExpression)expression);
+        if(expression instanceof RegularCharExpression){
+            return  ConvertChar((RegularCharExpression)expression);
         }
         if(expression instanceof RegularEmptyExpression){
             return  ConvertEmpty((RegularEmptyExpression)expression);
         }
         if(expression instanceof RegularConcatenationExpression){
             return  ConvertConcatenation((RegularConcatenationExpression)expression);
-        }
-        if(expression instanceof RegularAlternationCharSetExpression){
-            return  ConvertAlternationCharSet((RegularAlternationCharSetExpression)expression);
-        }
-        if(expression instanceof RegularStringLiteralExpression){
-            return  ConvertStringLiteral((RegularStringLiteralExpression)expression);
         }
         if(expression instanceof RegularKleeneStarExpression){
             return  ConvertKleeneStar((RegularKleeneStarExpression)expression);
@@ -36,7 +27,7 @@ public class NFAConverter {
     }
 
     public  NFAModel ConvertAlternation(RegularAlternationExpression expression){
-        RegularExpression[] regularExpressions = expression.getExpressions();
+        List<RegularExpression> expressions = expression.getExpressions();
 
         NFAState head = new NFAState();
         NFAState tail = new NFAState();
@@ -45,7 +36,7 @@ public class NFAConverter {
         alternationNfa.AddState(head);
         alternationNfa.AddState(tail);
 
-        for (RegularExpression exp:regularExpressions) {
+        for (RegularExpression exp:expressions) {
             NFAModel model = Convert(exp);
             head.AddEdge(model.getEntryEdge());
             model.getTailState().AddEmptyEdgeTo(tail);
@@ -58,10 +49,10 @@ public class NFAConverter {
         return alternationNfa;
     }
 
-    public  NFAModel ConvertSymbol(RegularSymbolExpression expression){
+    public  NFAModel ConvertChar(RegularCharExpression expression){
         NFAState tail = new NFAState();
 
-        NFAEdge entryEdge = new NFAEdge(charMapping.getCharIndex(expression.getSymbol()), tail);
+        NFAEdge entryEdge = new NFAEdge(expression.getCharacter(), tail);
         NFAModel symbolNfa = new NFAModel();
         symbolNfa.AddState(tail);
         symbolNfa.setTailState(tail);
@@ -84,12 +75,12 @@ public class NFAConverter {
 
     public  NFAModel ConvertConcatenation(RegularConcatenationExpression expression){
 
-        RegularExpression[] regularExpressions = expression.getExpressions();
+        List<RegularExpression> expressions = expression.getExpressions();
         NFAModel head = null;
         NFAModel last = null;
         NFAModel concatenationNfa = new NFAModel();
         //首尾相连
-        for (RegularExpression exp:regularExpressions) {
+        for (RegularExpression exp:expressions) {
             NFAModel model = Convert(exp);
             concatenationNfa.AddStates(model.getStates());
             if(head==null){
@@ -106,59 +97,10 @@ public class NFAConverter {
         return concatenationNfa;
     }
 
-    public  NFAModel ConvertAlternationCharSet(RegularAlternationCharSetExpression expression){
-        NFAState head = new NFAState();
-        NFAState tail = new NFAState();
-        //build edges
 
-        NFAModel charSetNfa = new NFAModel();
-
-        charSetNfa.AddState(head);
-
-        for (char c : expression.getCharSet()) {
-            NFAEdge symbolEdge = new NFAEdge(charMapping.getCharIndex(c), tail);
-            head.AddEdge(symbolEdge);
-        }
-        charSetNfa.AddState(tail);
-
-        //add an empty entry edge
-        charSetNfa.setEntryEdge(new NFAEdge(head));
-        charSetNfa.setTailState(tail);
-
-        return charSetNfa;
-    }
-
-    public  NFAModel ConvertStringLiteral(RegularStringLiteralExpression expression){
-        NFAModel literalNfa = new NFAModel();
-
-        NFAState lastState = null;
-
-        for(char symbol : expression.getLiteral().toCharArray())
-        {
-            NFAState symbolState = new NFAState();
-
-            NFAEdge symbolEdge = new NFAEdge(charMapping.getCharIndex(symbol), symbolState);
-
-            if (lastState != null)
-            {
-                lastState.AddEdge(symbolEdge);
-            }
-            else
-            {
-                literalNfa.setEntryEdge(symbolEdge);
-            }
-
-            lastState = symbolState;
-
-            literalNfa.AddState(symbolState);
-        }
-
-        literalNfa.setTailState(lastState);
-        return literalNfa;
-    }
 
     public  NFAModel ConvertKleeneStar(RegularKleeneStarExpression expression){
-        NFAModel innerNFA = Convert(expression.getInnerExpression());
+        NFAModel innerNFA = Convert(expression.getExpression());
 
         NFAState newTail = new NFAState();
         NFAEdge entry = new NFAEdge(newTail);

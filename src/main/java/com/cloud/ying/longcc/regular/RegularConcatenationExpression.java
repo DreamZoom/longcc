@@ -1,36 +1,28 @@
 package com.cloud.ying.longcc.regular;
 
 import java.util.ArrayList;
-import java.util.HashSet;
 import java.util.List;
 
-public class RegularConcatenationExpression extends RegularExpression {
-
-    public RegularExpression[] getExpressions() {
+/**
+ * 正则与运算表达式
+ */
+public class RegularConcatenationExpression  extends  RegularExpression{
+    public List<RegularExpression> getExpressions() {
         return expressions;
     }
 
-    private RegularExpression[] expressions;
-
-    public  RegularConcatenationExpression(RegularExpression... expressions){
-        this.expressions=expressions;
-    }
-
-    @Override
-    public List<HashSet<Character>> GetCompactableCharSets() {
-        List<HashSet<Character>> list = new ArrayList<>();
-        for (RegularExpression expression: expressions) {
-            list.addAll(expression.GetCompactableCharSets());
+    private List<RegularExpression> expressions;
+    public RegularConcatenationExpression(RegularExpression ...expressions){
+        this.expressions=new ArrayList<>();
+        for (int i = 0; i <expressions.length ; i++) {
+            this.expressions.add(expressions[i]);
         }
-        return list;
     }
 
-    @Override
-    public HashSet<Character> GetUncompactableCharSet() {
-        HashSet<Character> characters = new HashSet<>() ;
-        for (RegularExpression expression: expressions) {
-            characters.addAll(expression.GetUncompactableCharSet());
-        }
-        return characters;
+
+    public RegularConcatenationExpression(List<RegularExpression> expressions){
+        this.expressions=new ArrayList<>();
+        this.expressions.addAll(expressions);
     }
+
 }

@@ -1,4 +1,4 @@
-package com.cloud.ying.longcc.regular2;
+package com.cloud.ying.longcc.regular;
 
 /**
  * 表示一个字符

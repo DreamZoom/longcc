@@ -27,54 +27,54 @@ public class Lexicon {
         return  tokenDefinition;
     }
 
-
-    public CharMapping compressCharSet(){
-
-        HashMap<Character,Integer> compactClassTable =new HashMap<>();
-        List<HashSet<Character>> compactable =new ArrayList<>();
-        HashSet<Character> uncompactable =new HashSet<>();
-        for (TokenDefinition tokenDefinition:tokenDefinitionList) {
-            compactable.addAll(tokenDefinition.getExpression().GetCompactableCharSets());
-            uncompactable.addAll(tokenDefinition.getExpression().GetUncompactableCharSet());
-        }
-        HashSet<Character> compactableSets =new HashSet<>();
-
-        for (HashSet<Character> sets:compactable) {
-            compactableSets.addAll(sets);
-        }
-        compactableSets.removeAll(uncompactable);
-        int charIndex = 1;
-
-        for (char c: uncompactable) {
-            compactClassTable.put(c,charIndex++);
-        }
-
-        HashMap<HashSet<Integer>, Integer> compactClassDict = new HashMap<>();
-        for (char c: compactableSets) {
-            HashSet<Integer> keys = new HashSet<>();
-            for (int i = 0; i < compactable.size(); i++)
-            {
-                HashSet<Character> sets = compactable.get(i);
-                if (sets.contains(c)) {keys.add(i);}
-            }
-
-            if(compactClassDict.containsKey(keys)){
-                Integer index = compactClassDict.get(keys);
-                compactClassTable.put(c,index);
-            }
-            else{
-                int index = charIndex++;
-                compactClassDict.put(keys,index);
-                compactClassTable.put(c,index);
-            }
-
-        }
-        return new CharMapping(compactClassTable,charIndex-1);
-    }
+//
+//    public CharMapping compressCharSet(){
+//
+//        HashMap<Character,Integer> compactClassTable =new HashMap<>();
+//        List<HashSet<Character>> compactable =new ArrayList<>();
+//        HashSet<Character> uncompactable =new HashSet<>();
+//        for (TokenDefinition tokenDefinition:tokenDefinitionList) {
+//            compactable.addAll(tokenDefinition.getExpression().GetCompactableCharSets());
+//            uncompactable.addAll(tokenDefinition.getExpression().GetUncompactableCharSet());
+//        }
+//        HashSet<Character> compactableSets =new HashSet<>();
+//
+//        for (HashSet<Character> sets:compactable) {
+//            compactableSets.addAll(sets);
+//        }
+//        compactableSets.removeAll(uncompactable);
+//        int charIndex = 1;
+//
+//        for (char c: uncompactable) {
+//            compactClassTable.put(c,charIndex++);
+//        }
+//
+//        HashMap<HashSet<Integer>, Integer> compactClassDict = new HashMap<>();
+//        for (char c: compactableSets) {
+//            HashSet<Integer> keys = new HashSet<>();
+//            for (int i = 0; i < compactable.size(); i++)
+//            {
+//                HashSet<Character> sets = compactable.get(i);
+//                if (sets.contains(c)) {keys.add(i);}
+//            }
+//
+//            if(compactClassDict.containsKey(keys)){
+//                Integer index = compactClassDict.get(keys);
+//                compactClassTable.put(c,index);
+//            }
+//            else{
+//                int index = charIndex++;
+//                compactClassDict.put(keys,index);
+//                compactClassTable.put(c,index);
+//            }
+//
+//        }
+//        return new CharMapping(compactClassTable,charIndex-1);
+//    }
 
 
     public NFAModel convertToNFA(CharMapping charMapping){
-        NFAConverter converter = new NFAConverter(charMapping);
+        NFAConverter converter = new NFAConverter();
         NFAState entryState = new NFAState();
         NFAModel lexerNFA = new NFAModel();
         lexerNFA.AddState(entryState);
@@ -168,7 +168,7 @@ public class Lexicon {
     public FiniteAutomationEngine createEngine(){
 
 
-        CharMapping charMapping = compressCharSet();
+        CharMapping charMapping = null;//compressCharSet();
 
         NFAModel nfaModel =  this.convertToNFA(charMapping);
         DFAModel model =this.ConvertNFAToDFA(nfaModel,charMapping.maxIndex);

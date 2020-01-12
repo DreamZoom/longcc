@@ -1,4 +1,4 @@
-package com.cloud.ying.longcc.regular2;
+package com.cloud.ying.longcc.regular;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -62,6 +62,7 @@ public class RegularParser {
                     RegularExpression expression =new  RegularCharExpression((char)i);
                     list.add(expression);
                 }
+                index++;
 
             }
             else{

@@ -1,17 +1,21 @@
 package com.cloud.ying.longcc;
 
-import com.cloud.ying.longcc.regular2.RegularExpression;
-import com.cloud.ying.longcc.regular2.RegularParser;
+import com.cloud.ying.longcc.generator.NFAModel;
+import com.cloud.ying.longcc.regular.RegularExpression;
+import com.cloud.ying.longcc.regular.RegularParser;
 import org.junit.Test;
 
 public class RegularTest {
 
     @Test
     public void test(){
-        RegularParser parser =new RegularParser();
+
         try {
-            RegularExpression expression = parser.parser("aaa");
-            expression = parser.parser("aaa*[ab\u4e00-\u9fa5]");
+
+            LexiconEngine engine =new LexiconEngine();
+            engine.defineToken("field","[a-zA-Z][a-zA-Z0-9]*");
+            engine.defineToken("value","[a-zA-Z0-9]*");
+            NFAModel lexerNFA =engine.ConvertToNFA();
             System.out.println("test");
         }
         catch (Exception err){

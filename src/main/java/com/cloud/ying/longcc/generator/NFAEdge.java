@@ -6,17 +6,17 @@ public class NFAEdge {
         this.symbol = null;
         this.targetState = targetState;
     }
-    public NFAEdge(Integer symbol,NFAState targetState){
+    public NFAEdge(Character symbol,NFAState targetState){
         this.symbol = symbol;
         this.targetState = targetState;
     }
-    private Integer symbol;
+    private Character symbol;
 
-    public Integer getSymbol() {
+    public Character getSymbol() {
         return symbol;
     }
 
-    public void setSymbol(Integer symbol) {
+    public void setSymbol(Character symbol) {
         this.symbol = symbol;
     }
 
