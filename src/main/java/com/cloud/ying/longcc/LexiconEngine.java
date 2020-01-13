@@ -19,6 +19,33 @@ public class LexiconEngine {
         map.put(tag,parser.parser(regex));
     }
 
+    public void initialize(){
+        //解析
+        NFAModel nfaModel = this.ConvertToNFA();
+
+        //压缩字符集
+        CompressCharSet();
+
+    }
+
+    /**
+     * 压缩字符集
+     */
+    public void CompressCharSet(){
+        HashSet<Character> incompressibleCharSet = new HashSet<>();
+        HashSet<Character> compressibleCharSet = new HashSet<>();
+        Iterator iterator = map.entrySet().iterator();
+        while (iterator.hasNext()){
+            Map.Entry<String, RegularExpression> item =  (Map.Entry<String, RegularExpression>)iterator.next();
+            incompressibleCharSet.addAll(item.getValue().GetIncompressibleCharSet());
+            compressibleCharSet.addAll(item.getValue().GetCompressibleCharSet());
+        }
+
+        compressibleCharSet.removeAll(incompressibleCharSet);
+
+
+    }
+
     public NFAModel ConvertToNFA(){
         NFAConverter converter = new NFAConverter();
         NFAState entryState = new NFAState();
@@ -36,28 +63,19 @@ public class LexiconEngine {
         return  lexerNFA;
     }
 
-    private List<NFAState> GetClosure(List<NFAState> states){
-        List<NFAState> list=new ArrayList<>();
-        int size = states.size();
-        for (int i = 0; i < size; i++) {
-            for (NFAEdge edge:states.get(i).getEdges()) {
-                if(edge.IsEmpty()){
-                    list.add(edge.getTargetState());
-                }
-            }
-        }
-        List<NFAState> next=  GetClosure(list);
-        list.addAll(next);
-        return list;
-    }
+
     public DFAModel ConvertNFAToDFA(NFAModel nfaModel){
         NFAState root = nfaModel.getEntryEdge().getTargetState();
-        List<NFAState> list =new ArrayList<>();
-        list.add(root);
+
 
         DFAState state1 =new DFAState();
-        state1.setNfaStates(GetClosure(list));
-        ;
+
+        List<NFAState> list =new ArrayList<>();
+        list.add(root);
+        List<NFAState> states =NFAUtils.GetClosure(list);
+        list.addAll(states);
+        state1.getNfaStates().addAll(list);
+
         return null;
     }
 

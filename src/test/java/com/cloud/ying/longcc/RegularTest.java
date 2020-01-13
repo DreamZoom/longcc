@@ -15,7 +15,7 @@ public class RegularTest {
             LexiconEngine engine =new LexiconEngine();
             engine.defineToken("field","[a-zA-Z][a-zA-Z0-9]*");
             engine.defineToken("value","[a-zA-Z0-9]*");
-            NFAModel lexerNFA =engine.ConvertToNFA();
+            engine.initialize();
             System.out.println("test");
         }
         catch (Exception err){
