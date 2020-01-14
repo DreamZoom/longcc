@@ -15,4 +15,9 @@ public class RegularEmptyExpression extends  RegularExpression {
         Set<Character> list = new HashSet<>();
         return list;
     }
+
+    @Override
+    public Set<Set<Character>> GetListCharSet() {
+        return null;
+    }
 }

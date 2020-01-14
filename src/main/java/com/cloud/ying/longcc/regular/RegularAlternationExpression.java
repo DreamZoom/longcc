@@ -47,4 +47,29 @@ public class RegularAlternationExpression extends RegularExpression {
         }
         return list;
     }
+
+    @Override
+    public Set<Set<Character>> GetListCharSet(){
+        Set<Set<Character>> list =new HashSet<>();
+        Set<Character> set = new HashSet<>();
+        for (int i = 0; i <expressions.size() ; i++) {
+            if(expressions.get(i).IsSymbol()){
+                set.add(expressions.get(i).GetSymbol());
+            }
+            else{
+                if(set.size()>0){
+                    list.add(set);
+
+                    set=new HashSet<>();
+                    list.addAll(expressions.get(i).GetListCharSet());
+                }
+            }
+        }
+        if(set.size()>0){
+            list.add(set);
+        }
+
+
+        return list;
+    }
 }

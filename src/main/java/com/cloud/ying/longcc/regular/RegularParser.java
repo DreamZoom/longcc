@@ -8,10 +8,11 @@ public class RegularParser {
     /**
      * 递归下降算法，解析正则表达式。
      * 正则文法扫描
-     * E=char
-     * E=(E) #与运算
-     * E=[E] #或运算
+     * S=E
+     * E=char|char-char
      * E=E*
+     * E=(E...) #与运算
+     * E=[E...] #或运算
      */
     Integer index;
     char[] characters;

@@ -1,5 +1,6 @@
 package com.cloud.ying.longcc.regular;
 
+import java.util.List;
 import java.util.Set;
 
 public abstract class RegularExpression {
@@ -14,4 +15,18 @@ public abstract class RegularExpression {
      * @return
      */
     public abstract Set<Character> GetIncompressibleCharSet();
+
+    public abstract Set<Set<Character>> GetListCharSet();
+
+    public boolean IsSymbol(){
+        return false;
+    }
+
+    /**
+     * 获取符号 must used if is symbol
+     * @return
+     */
+    public Character GetSymbol(){
+        return null;
+    }
 }

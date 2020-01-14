@@ -34,4 +34,20 @@ public class RegularCharExpression extends RegularExpression {
         Set<Character> list = new HashSet<>();
         return list;
     }
+
+    @Override
+    public boolean IsSymbol() {
+        return true;
+    }
+
+    @Override
+    public Character GetSymbol() {
+        return character;
+    }
+
+    @Override
+    public Set<Set<Character>> GetListCharSet(){
+        return null;
+    }
+
 }

@@ -74,7 +74,7 @@ public class Lexicon {
 
 
     public NFAModel convertToNFA(CharMapping charMapping){
-        NFAConverter converter = new NFAConverter();
+        NFAConverter converter = new NFAConverter(null);
         NFAState entryState = new NFAState();
         NFAModel lexerNFA = new NFAModel();
         lexerNFA.AddState(entryState);

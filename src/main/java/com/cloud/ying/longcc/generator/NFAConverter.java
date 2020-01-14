@@ -1,10 +1,17 @@
 package com.cloud.ying.longcc.generator;
 
+import com.cloud.ying.longcc.CharClassTable;
 import com.cloud.ying.longcc.regular.*;
 
-import java.util.List;
+import java.util.*;
 
 public class NFAConverter {
+
+    CharClassTable classTable;
+    public NFAConverter(CharClassTable classTable){
+        assert classTable!=null;
+        this.classTable=classTable;
+    }
 
     public NFAModel Convert(RegularExpression expression)
     {
@@ -42,6 +49,22 @@ public class NFAConverter {
             model.getTailState().AddEmptyEdgeTo(tail);
             alternationNfa.AddStates(model.getStates());
         }
+
+        Iterator iterator = head.getEdges().iterator();
+
+        /**
+         * 压缩nfa的边，等价类划分后，nfa的边就有多余的了。
+         */
+        HashSet<NFAEdge> edges = new HashSet<>();
+        while (iterator.hasNext()){
+            NFAEdge edge =(NFAEdge)iterator.next();
+            if(edge.getTargetState().OnlyEmptyEdge()){
+                edge.setTargetState(edge.getTargetState().OnlyEmptyEdgeNextState());
+            }
+            edges.add(edge);
+        }
+        head.setEdges(edges);
+
         //add an empty entry edge
         alternationNfa.setEntryEdge(new NFAEdge(head));
         alternationNfa.setTailState(tail);
@@ -51,8 +74,9 @@ public class NFAConverter {
 
     public  NFAModel ConvertChar(RegularCharExpression expression){
         NFAState tail = new NFAState();
-
-        NFAEdge entryEdge = new NFAEdge(expression.getCharacter(), tail);
+        Character character =expression.getCharacter();
+        Integer cls= classTable.GetClass(character);
+        NFAEdge entryEdge = new NFAEdge(cls, tail);
         NFAModel symbolNfa = new NFAModel();
         symbolNfa.AddState(tail);
         symbolNfa.setTailState(tail);

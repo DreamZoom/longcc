@@ -1,24 +1,24 @@
 package com.cloud.ying.longcc.generator;
 
+import java.util.Objects;
+
 public class NFAEdge {
 
     public NFAEdge(NFAState targetState){
         this.symbol = null;
         this.targetState = targetState;
     }
-    public NFAEdge(Character symbol,NFAState targetState){
+    public NFAEdge(Integer symbol,NFAState targetState){
         this.symbol = symbol;
         this.targetState = targetState;
     }
-    private Character symbol;
+    private Integer symbol;
 
-    public Character getSymbol() {
+    public Integer getSymbol() {
         return symbol;
     }
 
-    public void setSymbol(Character symbol) {
-        this.symbol = symbol;
-    }
+
 
     public NFAState getTargetState() {
         return targetState;
@@ -32,5 +32,19 @@ public class NFAEdge {
 
     public boolean IsEmpty(){
         return  symbol==null;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        NFAEdge edge = (NFAEdge) o;
+        return Objects.equals(symbol, edge.symbol) &&
+                Objects.equals(targetState, edge.targetState);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(symbol, targetState);
     }
 }

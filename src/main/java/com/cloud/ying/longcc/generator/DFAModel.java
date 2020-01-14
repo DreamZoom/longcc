@@ -65,14 +65,12 @@ public class DFAModel {
             for(int s =0;s<list.length;s++)
             {
                 NFAState nfaState = list[s];
-                List<NFAEdge> outEdges = nfaState.getEdges();
-                int edgeCount = outEdges.size();
-                for (int i = 0; i < edgeCount; i++)
-                {
-                    NFAEdge edge = outEdges.get(i);
+                HashSet<NFAEdge> outEdges = nfaState.getEdges();
 
-                    if (edge.IsEmpty())
-                    {
+                Iterator iterator = outEdges.iterator();
+                while (iterator.hasNext()){
+                    NFAEdge edge =(NFAEdge)iterator.next();
+                    if(edge.IsEmpty()) {
                         NFAState target = edge.getTargetState();
                         changed = closure.getNfaStates().add(target) || changed;
                     }
@@ -88,12 +86,10 @@ public class DFAModel {
         DFAState target = new DFAState();
         for(NFAState nfaState : start.getNfaStates())
         {
-            List<NFAEdge> outEdges = nfaState.getEdges();
-            int edgeCount = outEdges.size();
-            for (int i = 0; i < edgeCount; i++)
-            {
-                NFAEdge edge = outEdges.get(i);
-
+            HashSet<NFAEdge> outEdges = nfaState.getEdges();
+            Iterator iterator = outEdges.iterator();
+            while (iterator.hasNext()){
+                NFAEdge edge =(NFAEdge)iterator.next();
                 if (!edge.IsEmpty() && edge.getSymbol().equals(symbol))
                 {
                     target.getNfaStates().add(edge.getTargetState());

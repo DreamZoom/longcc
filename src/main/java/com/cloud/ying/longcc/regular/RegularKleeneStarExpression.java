@@ -32,4 +32,18 @@ public class RegularKleeneStarExpression extends RegularExpression {
         return list;
 
     }
+
+    @Override
+    public Set<Set<Character>> GetListCharSet(){
+        Set<Set<Character>> list =new HashSet<>();
+        if(expression.IsSymbol()){
+            Set<Character> set = new HashSet<>();
+            set.add(expression.GetSymbol());
+            list.add(set);
+        }
+        else{
+            list.addAll(expression.GetListCharSet());
+        }
+        return list;
+    }
 }

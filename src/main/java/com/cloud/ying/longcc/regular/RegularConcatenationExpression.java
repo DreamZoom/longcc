@@ -50,4 +50,20 @@ public class RegularConcatenationExpression  extends  RegularExpression{
 
     }
 
+    @Override
+    public Set<Set<Character>> GetListCharSet(){
+        Set<Set<Character>> list =new HashSet<>();
+        for (int i = 0; i <expressions.size() ; i++) {
+            if(expressions.get(i).IsSymbol()){
+                Set<Character> set = new HashSet<>();
+                set.add(expressions.get(i).GetSymbol());
+                list.add(set);
+            }
+            else{
+                list.addAll(expressions.get(i).GetListCharSet());
+            }
+        }
+        return list;
+    }
+
 }
