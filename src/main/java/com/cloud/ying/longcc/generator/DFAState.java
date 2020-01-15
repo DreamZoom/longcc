@@ -4,6 +4,7 @@ import com.cloud.ying.longcc.TokenDefinition;
 
 import java.util.ArrayList;
 import java.util.HashSet;
+import java.util.Iterator;
 import java.util.List;
 
 public class DFAState {
@@ -62,6 +63,20 @@ public class DFAState {
 
     @Override
     public String toString() {
-        return "DFA#"+index+"@"+nfaStates;
+//        Iterator iterator = nfaStates.iterator();
+        StringBuffer sb=new StringBuffer();
+        return "DFA#"+index+"@"+sb.toString();
+    }
+
+
+    public  String getTag(){
+        Iterator iterator = nfaStates.iterator();
+        while (iterator.hasNext()){
+            NFAState state = (NFAState)iterator.next();
+            if(state.getTag()!=null && !state.getTag().equals("")){
+                return state.getTag();
+            }
+        }
+        return "";
     }
 }

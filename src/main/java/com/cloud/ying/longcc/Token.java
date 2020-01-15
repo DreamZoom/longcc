@@ -11,32 +11,26 @@ public class Token {
         this.word = word;
     }
 
-    public TokenDefinition getTokenDefinition() {
-        return tokenDefinition;
+
+    public String getTag() {
+        return tag;
     }
 
-    public void setTokenDefinition(TokenDefinition tokenDefinition) {
-        this.tokenDefinition = tokenDefinition;
+    public void setTag(String tag) {
+        this.tag = tag;
     }
 
-    private TokenDefinition tokenDefinition;
+    private String tag;
 
 
-    public Token(String word,TokenDefinition tag){
+    public Token(String word,String tag){
         this.word=word;
-        this.tokenDefinition = tag;
+        this.tag = tag;
     }
 
     @Override
     public String toString() {
-        if(tokenDefinition!=null)
-            return this.word+"==>"+this.tokenDefinition.getTag();
-        return this.word+"==>Unkown";
+        return this.word+"==>"+this.tag;
     }
 
-    public  String getTag(){
-        if(tokenDefinition!=null)
-            return this.tokenDefinition.getTag();
-        return "";
-    }
 }

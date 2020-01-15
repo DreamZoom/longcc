@@ -89,6 +89,6 @@ public class NFAState {
 
     @Override
     public String toString() {
-        return "nfa#"+index;
+        return "nfa#"+index+"#"+tag;
     }
 }

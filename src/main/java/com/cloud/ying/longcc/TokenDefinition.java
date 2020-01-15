@@ -64,7 +64,7 @@ public class TokenDefinition {
         TokenDefinition definition = this;
         Function<ForkableScanner,LexemeResult> func = scanner -> {
             Token lexeme = scanner.read();
-            if(lexeme!=null && lexeme.getTokenDefinition()==definition){
+            if(lexeme!=null && lexeme.getTag()==definition.getTag()){
                 return  new LexemeResult(lexeme,scanner);
             }
             else{

@@ -45,7 +45,7 @@ public class FiniteAutomationEngine {
 
             DFAState dfaState = states.get(last_state);
             if(dfaState!=null){
-                token = new Token(words,dfaState.getTokenDefinition());
+                token = new Token(words,dfaState.getTag());
             }
             else{
                 token = new Token(words,null);

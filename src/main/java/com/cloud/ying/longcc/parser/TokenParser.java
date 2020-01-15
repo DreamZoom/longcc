@@ -18,7 +18,7 @@ public class TokenParser extends Parser {
         if(lexeme==null){
             return null;
         }
-        if(lexeme.getTokenDefinition()==null|| lexeme.getTokenDefinition()!=tokenDefinition) return null;
+        if(lexeme.getTag()==null|| lexeme.getTag()!=tokenDefinition.getTag()) return null;
 
         context.setNode(new Node(lexeme));
         return context;

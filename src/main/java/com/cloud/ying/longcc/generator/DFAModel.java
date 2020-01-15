@@ -41,10 +41,6 @@ public class DFAModel {
         }
 
 
-        if(state.getIndex()==5){
-            System.out.println("#"+state.getIndex()+"="+state.getTokenDefinition());
-        }
-
     }
 
 
