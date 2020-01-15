@@ -1,9 +1,0 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<testsuite name="com.cloud.ying.longcc.RegularTest" tests="1" skipped="0" failures="0" errors="0" timestamp="2020-01-15T10:05:02" hostname="DESKTOP-Q6USJIU" time="13.437">
-  <properties/>
-  <testcase name="test" classname="com.cloud.ying.longcc.RegularTest" time="13.437"/>
-  <system-out><![CDATA[false
-it consumes 13429ms
-]]></system-out>
-  <system-err><![CDATA[]]></system-err>
-</testsuite>
