@@ -23,6 +23,11 @@ public class RegularParser {
         index=0;
         return E(0);
     }
+    public RegularExpression parse(String pattern) throws Exception{
+        characters = pattern.toCharArray();
+        index=0;
+        return AND();
+    }
 
 
     private RegularExpression E(int k) throws Exception{
@@ -54,14 +59,6 @@ public class RegularParser {
                 list.set(list.size()-1,expression);
                 index++;
             }
-//            else if(c=='|'){
-//                if(list.size()==0) throw new Exception("*运算必须要有前置表达式");
-//                RegularExpression prev= list.get(list.size()-1);
-//                RegularExpression expression = E(0);
-//
-//                list.set(list.size()-1,expression);
-//                index++;
-//            }
             else if(c=='-'){
                 if(k!=2) throw new Exception("char - must be show in []");
                 if(list.size()==0) throw new Exception("-运算必须要有前置表达式");
@@ -85,53 +82,51 @@ public class RegularParser {
         return new RegularConcatenationExpression(list);
     }
 
+    private RegularExpression E2() throws Exception{
 
-    /**
-     * S' = E
-     * C = char
-     * F = C-C
-     * E = CE
-     * E = -C
-     * E = (E)
-     * E = [F*]
-     * G = |E
-     * G = *
-     * E = GE
-     */
-    public RegularExpression parse(String pattern){
-        characters = pattern.toCharArray();
-        index=0;
-        return S();
+        RegularExpression regularExpression;
+
+        List<RegularExpression> list=new ArrayList<>();
+        while (index<characters.length){
+            char c = characters[index];
+            char n = characters[index+1];
+
+        }
+        return new RegularConcatenationExpression(list);
     }
 
-    public RegularExpression S(){
-        char c = characters[index];
-        RegularExpression expression;
-        if(c=='('){
-            index++;
-            expression=S();
-            index++;
+
+    private RegularExpression AND() throws Exception{
+        List<RegularExpression> list=new ArrayList<>();
+        while (index<characters.length){
+            char c = characters[index];
+            if(c=='('){
+                index++;
+                list.add(AND());
+            }
+            else if(c==')'){
+                index++;
+            }
+            else if(c=='['){
+                index++;
+                list.add(OR());
+                index++;
+            }
+            else{
+                list.add(new RegularCharExpression(c));
+                index++;
+            }
         }
-        else if(c=='['){
-            index++;
-            expression=S();
-            index++;
+        return new RegularConcatenationExpression(list);
+    }
+    private RegularExpression OR() throws Exception{
+        List<RegularExpression> list=new ArrayList<>();
+        while (index<characters.length){
+            list.add(AND());
         }
-        else if(c=='-')
-        {
-            index++;
-            expression=S();
-        }
-        else{
-            expression = C();
-        }
-        return expression;
+        return new RegularConcatenationExpression(list);
     }
 
-    public RegularExpression C(){
-        char c = characters[index++];
-        RegularExpression expression =new  RegularCharExpression(c);
-        return expression;
-    }
+
 
 }

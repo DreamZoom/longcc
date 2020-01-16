@@ -38,8 +38,8 @@ public class RegularTest {
 //            System.out.println("it consumes " +(System.currentTimeMillis() - start) + "ms");
 
               RegularParser parser =new RegularParser();
-              RegularExpression expression =  parser.parse("[a-zA-Z]");
-            System.out.println(expression);
+              RegularExpression expression =  parser.parse("[abc]");
+              System.out.println(expression);
 
         }
         catch (Exception err){

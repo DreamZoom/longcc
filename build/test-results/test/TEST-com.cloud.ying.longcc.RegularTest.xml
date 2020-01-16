@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<testsuite name="com.cloud.ying.longcc.RegularTest" tests="1" skipped="0" failures="0" errors="0" timestamp="2020-01-16T09:02:51" hostname="DESKTOP-Q6USJIU" time="604.642">
+<testsuite name="com.cloud.ying.longcc.RegularTest" tests="1" skipped="0" failures="0" errors="0" timestamp="2020-01-16T10:07:50" hostname="DESKTOP-Q6USJIU" time="73.914">
   <properties/>
-  <testcase name="test" classname="com.cloud.ying.longcc.RegularTest" time="604.642"/>
-  <system-out><![CDATA[com.cloud.ying.longcc.regular.RegularCharExpression@22b04fe
+  <testcase name="test" classname="com.cloud.ying.longcc.RegularTest" time="73.914"/>
+  <system-out><![CDATA[com.cloud.ying.longcc.regular.RegularConcatenationExpression@4f4d56aa
 ]]></system-out>
   <system-err><![CDATA[]]></system-err>
 </testsuite>
