@@ -9,10 +9,12 @@ public class RegularParser {
      * 递归下降算法，解析正则表达式。
      * 正则文法扫描
      * S=E
-     * E=char|char-char
-     * E=E*
-     * E=(E...) #与运算
-     * E=[E...] #或运算
+     * F=char|char-char
+     * F=(E) #与运算
+     * F=[E] #或运算
+     * G=|E
+     * G=*
+     * E=FG
      */
     Integer index;
     char[] characters;
@@ -52,6 +54,14 @@ public class RegularParser {
                 list.set(list.size()-1,expression);
                 index++;
             }
+//            else if(c=='|'){
+//                if(list.size()==0) throw new Exception("*运算必须要有前置表达式");
+//                RegularExpression prev= list.get(list.size()-1);
+//                RegularExpression expression = E(0);
+//
+//                list.set(list.size()-1,expression);
+//                index++;
+//            }
             else if(c=='-'){
                 if(k!=2) throw new Exception("char - must be show in []");
                 if(list.size()==0) throw new Exception("-运算必须要有前置表达式");
@@ -75,5 +85,53 @@ public class RegularParser {
         return new RegularConcatenationExpression(list);
     }
 
+
+    /**
+     * S' = E
+     * C = char
+     * F = C-C
+     * E = CE
+     * E = -C
+     * E = (E)
+     * E = [F*]
+     * G = |E
+     * G = *
+     * E = GE
+     */
+    public RegularExpression parse(String pattern){
+        characters = pattern.toCharArray();
+        index=0;
+        return S();
+    }
+
+    public RegularExpression S(){
+        char c = characters[index];
+        RegularExpression expression;
+        if(c=='('){
+            index++;
+            expression=S();
+            index++;
+        }
+        else if(c=='['){
+            index++;
+            expression=S();
+            index++;
+        }
+        else if(c=='-')
+        {
+            index++;
+            expression=S();
+        }
+        else{
+            expression = C();
+        }
+        return expression;
+    }
+
+    public RegularExpression C(){
+        char c = characters[index++];
+        RegularExpression expression =new  RegularCharExpression(c);
+        return expression;
+    }
 
 }

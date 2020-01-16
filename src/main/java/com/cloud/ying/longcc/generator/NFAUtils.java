@@ -1,39 +1,60 @@
 package com.cloud.ying.longcc.generator;
 
 import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.Iterator;
 import java.util.List;
 
 public  class NFAUtils {
 
-    public static List<NFAState> GetClosure(List<NFAState> states){
-        List<NFAState> list=new ArrayList<>();
-        int size = states.size();
-        for (int i = 0; i < size; i++) {
-            for (NFAEdge edge:states.get(i).getEdges()) {
-                if(edge.IsEmpty()){
-                    list.add(edge.getTargetState());
+    public static DFAState GetClosure(DFAState state)
+    {
+        DFAState closure = new DFAState();
+
+        closure.getNfaStates().addAll(state.getNfaStates());
+        boolean changed = true;
+
+        while (changed)
+        {
+            changed = false;
+            int size = closure.getNfaStates().size();
+            NFAState[] list =new NFAState[size];
+            closure.getNfaStates().toArray(list);
+
+            for(int s =0;s<list.length;s++)
+            {
+                NFAState nfaState = list[s];
+                HashSet<NFAEdge> outEdges = nfaState.getEdges();
+
+                Iterator iterator = outEdges.iterator();
+                while (iterator.hasNext()){
+                    NFAEdge edge =(NFAEdge)iterator.next();
+                    if(edge.IsEmpty()) {
+                        NFAState target = edge.getTargetState();
+                        changed = closure.getNfaStates().add(target) || changed;
+                    }
                 }
             }
         }
-        if(list.size()>0) {
-            List<NFAState> next = GetClosure(list);
-            list.addAll(next);
-        }
-        return list;
+
+        return closure;
     }
 
-    public static List<NFAState> GetDFAStates(List<NFAState> states, Integer symbol)
+    public static DFAState GetDFAState(DFAState start, Integer symbol)
     {
         DFAState target = new DFAState();
-        List<NFAState> newStates=new ArrayList<>();
-        for(NFAState nfaState : states)
+        for(NFAState nfaState : start.getNfaStates())
         {
-            for (NFAEdge edge:nfaState.getEdges()) {
-                if (!edge.IsEmpty() && edge.getSymbol().equals(symbol)){
-                    newStates.add(edge.getTargetState());
+            HashSet<NFAEdge> outEdges = nfaState.getEdges();
+            Iterator iterator = outEdges.iterator();
+            while (iterator.hasNext()){
+                NFAEdge edge =(NFAEdge)iterator.next();
+                if (!edge.IsEmpty() && edge.getSymbol().equals(symbol))
+                {
+                    target.getNfaStates().add(edge.getTargetState());
                 }
             }
         }
-        return GetClosure(newStates);
+        return GetClosure(target);
     }
 }

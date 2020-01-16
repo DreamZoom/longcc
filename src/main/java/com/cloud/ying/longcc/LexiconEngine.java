@@ -9,23 +9,23 @@ import java.util.function.Predicate;
 
 public class LexiconEngine {
 
-    HashMap<String, RegularExpression> map;
+    List<TokenDefinition> tokenDefinitions;
     RegularParser parser;
     List<HashMap<Integer,Integer>> stateTransitionTable;
     CharClassTable charClassTable;
     DFAModel dfaModel;
     //终结符
     String terminator;
-    HashMap<String,String[][]> grammars;
+    HashMap<String,Grammar> grammars;
     public LexiconEngine(){
         parser=new RegularParser();
-        map=new HashMap<>();
+        tokenDefinitions=new ArrayList<>();
         terminator="\r\n";
         grammars =new HashMap<>();
     }
 
     public void defineToken(String tag,String regex) throws Exception{
-        map.put(tag,parser.parser(regex));
+        tokenDefinitions.add(new TokenDefinition(parser.parser(regex),tag));
     }
     public void defineTerminator(String regex){
         terminator = regex;
@@ -38,8 +38,10 @@ public class LexiconEngine {
      * @param tag 非终结符
      * @param expressions 文法表达式
      */
-    public void defineGrammar(String tag,String[] ...expressions){
-        grammars.put(tag,expressions);
+    public Grammar defineGrammar(String tag,String[] ...expressions){
+        Grammar grammar=new Grammar(expressions);
+        grammars.put(tag,grammar);
+        return grammar;
     }
 
     public void initialize() throws Exception{
@@ -87,23 +89,10 @@ public class LexiconEngine {
     }
 
 
-    private int matchedSegment(List<Token> tokens,int index,String[] segment){
-        boolean matched=true;
-        int i=0;
-        while (matched && i<segment.length){
-            matched =tokens.get(index++).getTag().equals(segment[i]);
-            i++;
-        }
-        if(matched){
-            return i;
-        }
-        return -1;
-    }
-    public void parse(String expression) throws Exception{
+    public Segment parse(String expression) throws Exception{
         List<Token> tokens =this.scan(expression);
         ParserContext context =new ParserContext(tokens,0);
-
-        System.out.println(this.parse(context,"G"));
+        return this.parse(context,"G");
     }
 
     /**
@@ -113,47 +102,62 @@ public class LexiconEngine {
      * @return
      * @throws Exception
      */
-    private boolean parse(ParserContext context, String tag) throws Exception{
-        String[][] segments = grammars.get(tag);
-        for (int i = 0; i <segments.length ; i++) {
+    private Segment parse(ParserContext context, String tag) throws Exception{
+        Grammar grammar = grammars.get(tag);
+        Segment segment=null;
+        for (int i = 0; i <grammar.segments.length ; i++) {
             ParserContext temp =context.fork();
-            if(parse(temp,segments[i])){
+            if(parse(temp,grammar.segments[i])){
                 //反向传播index
                 context.setIndex(temp.getIndex());
-                return true;
+                //System.out.println(tag+"="+context.tokens.subList(context.index,temp.index));
+                if(grammar.parser!=null){
+                    segment=grammar.parser.parse(temp.args.toArray());
+                }
+                return segment;
             }
         }
-        return false;
+        return null;
     }
 
     /**
-     * 与解析
-     * @param context
-     * @param segment
-     * @return
+     * 匹配一个句子 并返回匹配的数据
+     * @param context 上下文
+     * @param expression 表达式
+     * @return true 与expression相匹配
      * @throws Exception
      */
-    private boolean parse(ParserContext context,String[] segment) throws Exception{
+    private boolean parse(ParserContext context,String[] expression) throws Exception{
         boolean matched=true;
         int i=0;
-        while (matched && i<segment.length){
-            String tag = segment[i];
+        while (matched && i<expression.length){
+            String tag = expression[i];
             if(grammars.containsKey(tag)){
-                matched = parse(context,tag);
+                Segment segment = parse(context,tag);
+                if(segment!=null){
+                    matched=true;
+                    context.args.add(segment);
+                }
             }
             else{
                 if(tag.indexOf('*')>=0){
-                    boolean end =false;
+                    boolean m =false;
                     String real_tag =tag.replace("*","");
                     while (context.tokens.get(context.index).getTag().equals(real_tag)){
                         context.index++;
+                        m=true;
                     }
+                    matched=m;
                 }
                 else{
                     matched =context.tokens.get(context.index).getTag().equals(tag);
                     context.index++;
                 }
+                if(matched){
+                    context.args.add(context.tokens.get(context.index-1));
+                }
             }
+
             i++;
         }
         return  matched;
@@ -182,18 +186,15 @@ public class LexiconEngine {
      */
     public CharClassTable CompressCharSet(){
         Set<Set<Character>> list=new HashSet<>();
-        Iterator iterator = map.entrySet().iterator();
+        Iterator iterator = tokenDefinitions.iterator();
         while (iterator.hasNext()){
-            Map.Entry<String, RegularExpression> item =  (Map.Entry<String, RegularExpression>)iterator.next();
-            list.addAll(item.getValue().GetListCharSet());
+            TokenDefinition definition =  (TokenDefinition)iterator.next();
+            list.addAll(definition.getExpression().GetListCharSet());
         }
 
         //找公共区间
-
         List<Set<Character>> array=new ArrayList<>();
         array.addAll(list);
-//        Collections.sort(array,(a,b)->a.size()-b.size());
-
         boolean changed=true;
         while (changed){
             changed=false;
@@ -221,7 +222,6 @@ public class LexiconEngine {
                         if(s2.size()==0){
                             array.remove(s2);
                         }
-                        //Collections.sort(array,(a,b)->a.size()-b.size());
                         break;
                     }
                 }
@@ -251,11 +251,11 @@ public class LexiconEngine {
         NFAState entryState = new NFAState();
         NFAModel lexerNFA = new NFAModel();
         lexerNFA.AddState(entryState);
-        Iterator iterator = map.entrySet().iterator();
+        Iterator iterator = tokenDefinitions.iterator();
         while (iterator.hasNext()){
-            Map.Entry<String, RegularExpression> item =  (Map.Entry<String, RegularExpression>)iterator.next();
-            NFAModel model=converter.Convert(item.getValue());
-            model.getTailState().setTag(item.getKey());
+            TokenDefinition definition =  (TokenDefinition)iterator.next();
+            NFAModel model=converter.Convert(definition.getExpression());
+            model.getTailState().setTag(definition.getTag());
             entryState.AddEdge(model.getEntryEdge());
             lexerNFA.AddStates(model.getStates());
         }
@@ -277,7 +277,7 @@ public class LexiconEngine {
         DFAState preState1 = new DFAState();
         preState1.getNfaStates().add(nfaModel.getEntryEdge().getTargetState());
 
-        DFAState state1 = dfaModel.GetClosure(preState1);
+        DFAState state1 = NFAUtils.GetClosure(preState1);
         dfaModel.AddDFAState(state1);
 
         DFAState[] newStates = new DFAState[maxCharIndex+1];
@@ -290,7 +290,7 @@ public class LexiconEngine {
             DFAState sourceState =states.get(j);
 
             for (int i = 1; i <= maxCharIndex; i++) {
-                newStates[i] = dfaModel.GetDFAState(sourceState,i);
+                newStates[i] = NFAUtils.GetDFAState(sourceState,i);
             }
             for (int c = 1; c <= maxCharIndex; c++){
                 DFAState e = newStates[c];
@@ -321,7 +321,6 @@ public class LexiconEngine {
         List<HashMap<Integer,Integer>> transitionTable=new ArrayList<>();
         List<DFAState> states = dfaModel.getStates();
         for (DFAState state : states){
-
             HashMap<Integer,Integer> map = new HashMap<>();
             for (int c = 1; c <= maxCharIndex; c++){
                 int stateIndex = 0;
