@@ -38,7 +38,7 @@ public class RegularTest {
 //            System.out.println("it consumes " +(System.currentTimeMillis() - start) + "ms");
 
               RegularParser parser =new RegularParser();
-              RegularExpression expression =  parser.parser("[(and)(or)]");
+              RegularExpression expression =  parser.parse("a|b|c");
               System.out.println(expression);
 
         }

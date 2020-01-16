@@ -20,19 +20,83 @@ public class RegularParser {
     Integer index;
     char[] characters;
     Stack<Character> stack;
-    Stack<RegularExpression> stack_expression;
 
     public RegularExpression parser(String pattern) throws Exception{
         characters = pattern.toCharArray();
         index=0;
         stack = new Stack<>();
-        stack_expression =new Stack<>();
         return E();
+    }
+
+    private void push_expression(Stack<Stack<RegularExpression>> context,Stack<Character> symbol,RegularExpression expression){
+        if(!symbol.empty() && symbol.peek()=='|'){
+            RegularExpression prev= context.peek().pop();
+            context.peek().push(new RegularAlternationExpression(prev,expression));
+            symbol.pop();
+        }
+        else{
+            context.peek().push(expression);
+        }
     }
     public RegularExpression parse(String pattern) throws Exception{
         characters = pattern.toCharArray();
         index=0;
-        return AND();
+        Stack<Character> symbol = new Stack<>();
+        Stack<Stack<RegularExpression>> context =new Stack<>();
+        context.push(new Stack<>());
+
+        while (index<characters.length){
+            char c = characters[index];
+            if(c=='('){
+                index++;
+                symbol.push(c);
+                context.push(new Stack<>());
+            }else if(c==')'){
+                if(symbol.pop()!='(') throw new Exception("invalid token :"+c);
+                Stack<RegularExpression> expressions =context.pop();
+                push_expression(context,symbol,new RegularConcatenationExpression(expressions));
+                index++;
+            }
+            else if(c=='['){
+                index++;
+                symbol.push(c);
+                context.push(new Stack<>());
+            }else if(c==']'){
+                if(symbol.pop()!='[') throw new Exception("invalid token :"+c);
+                Stack<RegularExpression> expressions =context.pop();
+                push_expression(context,symbol,new RegularAlternationExpression(expressions));
+                index++;
+            }
+            else if(c=='*'){
+                RegularExpression expression= context.peek().pop();
+                push_expression(context,symbol,new RegularKleeneStarExpression(expression));
+                index++;
+            }
+            else if(c=='-'){
+                if(symbol.peek()!='[') throw new Exception("char - must be show in []");
+                if(context.peek().empty()) throw new Exception("-运算必须要有前置表达式");
+                if(!(context.peek().peek() instanceof RegularCharExpression)) throw new Exception("-符运算对象必须是char");
+                char min=characters[index-1];
+                char max=characters[++index];
+                for (int i = min+1; i <= max; i++) {
+                    RegularExpression expression =new  RegularCharExpression((char)i);
+                    push_expression(context,symbol,expression);
+                }
+                index++;
+            }
+            else if(c=='|'){
+                symbol.push(c);
+                index++;
+            }
+            else{
+                push_expression(context,symbol,new RegularCharExpression(c));
+                index++;
+            }
+        }
+        if(context.peek().size()==1){
+            return context.peek().pop();
+        }
+        return new RegularConcatenationExpression(context.peek());
     }
 
 
@@ -53,7 +117,7 @@ public class RegularParser {
                 if(start=='('){
                     return new RegularConcatenationExpression(list);
                 }
-                else if(start==']'){
+                else if(start=='['){
                     return new RegularAlternationExpression(list);
                 }
                 else{
