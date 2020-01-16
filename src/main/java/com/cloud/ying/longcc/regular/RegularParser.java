@@ -2,6 +2,7 @@ package com.cloud.ying.longcc.regular;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Stack;
 
 public class RegularParser {
 
@@ -18,10 +19,15 @@ public class RegularParser {
      */
     Integer index;
     char[] characters;
+    Stack<Character> stack;
+    Stack<RegularExpression> stack_expression;
+
     public RegularExpression parser(String pattern) throws Exception{
         characters = pattern.toCharArray();
         index=0;
-        return E(0);
+        stack = new Stack<>();
+        stack_expression =new Stack<>();
+        return E();
     }
     public RegularExpression parse(String pattern) throws Exception{
         characters = pattern.toCharArray();
@@ -30,26 +36,28 @@ public class RegularParser {
     }
 
 
-    private RegularExpression E(int k) throws Exception{
-
-        RegularExpression regularExpression;
+    private RegularExpression E() throws Exception{
 
         List<RegularExpression> list=new ArrayList<>();
         while (index<characters.length){
             char c = characters[index];
             if(c=='('||c=='['){
                 index++;
-                RegularExpression expression =E(c=='('?1:2);
+                stack.push(c);
+                RegularExpression expression =E();
                 list.add(expression);
                 index++;
             }
             else if(c==')'||c==']'){
-                if(k==0) throw new Exception("缺少开始符");
-                else if(k==1){
+                Character start = stack.pop();
+                if(start=='('){
                     return new RegularConcatenationExpression(list);
                 }
-                else if(k==2){
+                else if(start==']'){
                     return new RegularAlternationExpression(list);
+                }
+                else{
+                    throw new Exception("缺少开始符");
                 }
             }
             else if(c=='*'){
@@ -60,7 +68,7 @@ public class RegularParser {
                 index++;
             }
             else if(c=='-'){
-                if(k!=2) throw new Exception("char - must be show in []");
+                if(stack.peek()!='[') throw new Exception("char - must be show in []");
                 if(list.size()==0) throw new Exception("-运算必须要有前置表达式");
                 RegularExpression prev= list.get(list.size()-1);
                 if(index+1>=characters.length) new Exception("-运算必须要有后置表达式");
