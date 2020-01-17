@@ -3,5 +3,5 @@ package com.cloud.ying.longcc;
 import java.util.List;
 
 public interface Parser {
-    Segment parse(Object ...segment);
+    Segment parse(Object ...segment) throws Exception;
 }

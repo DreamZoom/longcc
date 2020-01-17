@@ -59,17 +59,14 @@ public class RegularAlternationExpression extends RegularExpression {
             else{
                 if(set.size()>0){
                     list.add(set);
-
                     set=new HashSet<>();
-                    list.addAll(expressions.get(i).GetListCharSet());
                 }
+                list.addAll(expressions.get(i).GetListCharSet());
             }
         }
         if(set.size()>0){
             list.add(set);
         }
-
-
         return list;
     }
 }

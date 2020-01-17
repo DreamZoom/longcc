@@ -25,7 +25,7 @@ public class LexiconEngine {
     }
 
     public void defineToken(String tag,String regex) throws Exception{
-        tokenDefinitions.add(new TokenDefinition(parser.parser(regex),tag));
+        tokenDefinitions.add(new TokenDefinition(parser.parse(regex),tag));
     }
     public void defineTerminator(String regex){
         terminator = regex;
@@ -69,6 +69,9 @@ public class LexiconEngine {
              Map<Integer,Integer> map =stateTransitionTable.get(state);
              Character character = chars[index];
              Integer charClass = charClassTable.GetClass(character);
+             if(charClass<0){
+                 throw new Exception("Invalid Token:"+character);
+             }
              last_state=state;
              state=map.get(charClass);
              if(state==0){
@@ -93,6 +96,56 @@ public class LexiconEngine {
         List<Token> tokens =this.scan(expression);
         ParserContext context =new ParserContext(tokens,0);
         return this.parse(context,"G");
+    }
+
+    private boolean reduce(Stack<String> stack,Stack stack_obj) throws Exception{
+        Iterator iterator = grammars.entrySet().iterator();
+        while (iterator.hasNext()){
+            Map.Entry<String, Grammar> item =(Map.Entry<String, Grammar>)iterator.next();
+            Grammar grammar = (Grammar)item.getValue();
+            for (int i = 0; i <grammar.segments.length ; i++) {
+                String[] segment = grammar.segments[i];
+                if(segment.length<=stack.size()){
+                    //判断是否可以规约
+                    if(String.join("--",segment).replace("*","").equals(String.join("--",stack.subList(stack.size()-segment.length,stack.size())))){
+                        Segment segment1= grammar.parser.parse(stack_obj.subList(stack_obj.size()-segment.length,stack_obj.size()).toArray());
+                        for (int j = 0; j <segment.length ; j++) {
+                            if(segment[j].indexOf('*')>0){
+                                while (stack.peek().equals(segment[j].replace("*",""))){
+                                    stack.pop();
+                                    stack_obj.pop();
+                                }
+                            }
+                            else {
+
+                            }
+                            stack.pop();
+                            stack_obj.pop();
+                        }
+                        stack.push(item.getKey());
+                        stack_obj.push(segment1);
+                        return true;
+                    }
+                }
+            }
+        }
+        return false;
+    }
+
+    public Segment parse2(String expression) throws Exception{
+        List<Token> tokens =this.scan(expression);
+        ParserContext context =new ParserContext(tokens,0);
+        Stack<String> stack =new Stack<>();
+        Stack<Object> stack_obj =new Stack<>();
+        int index = 0;
+        while (index<tokens.size()){
+            if(!reduce(stack,stack_obj)){
+                stack.push(tokens.get(index).getTag());
+                stack_obj.push(tokens.get(index++));
+            }
+        }
+        reduce(stack,stack_obj);
+        return (Segment)stack_obj.pop();
     }
 
     /**

@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<testsuite name="com.cloud.ying.longcc.RegularTest" tests="1" skipped="1" failures="0" errors="0" timestamp="2020-01-16T10:27:41" hostname="DESKTOP-Q6USJIU" time="9.364">
+<testsuite name="com.cloud.ying.longcc.RegularTest" tests="1" skipped="0" failures="0" errors="0" timestamp="2020-01-17T07:14:35" hostname="DESKTOP-Q6USJIU" time="77.425">
   <properties/>
-  <testcase name="test" classname="com.cloud.ying.longcc.RegularTest" time="9.364">
-    <skipped/>
-  </testcase>
-  <system-out><![CDATA[]]></system-out>
+  <testcase name="test" classname="com.cloud.ying.longcc.RegularTest" time="77.425"/>
+  <system-out><![CDATA[start
+it consumes 77411ms
+]]></system-out>
   <system-err><![CDATA[]]></system-err>
 </testsuite>

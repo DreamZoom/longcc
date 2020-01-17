@@ -88,13 +88,16 @@ public class RegularParser {
                 symbol.push(c);
                 index++;
             }
+            else if(c=='\\'){
+                //将\之后的字符看作char处理
+                char character=characters[++index];
+                push_expression(context,symbol,new RegularCharExpression(character));
+                index++;
+            }
             else{
                 push_expression(context,symbol,new RegularCharExpression(c));
                 index++;
             }
-        }
-        if(context.peek().size()==1){
-            return context.peek().pop();
         }
         return new RegularConcatenationExpression(context.peek());
     }

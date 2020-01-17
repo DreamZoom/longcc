@@ -2,10 +2,7 @@ package com.cloud.ying.longcc.generator;
 
 import com.cloud.ying.longcc.TokenDefinition;
 
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.Iterator;
-import java.util.List;
+import java.util.*;
 
 public class DFAState {
 
@@ -70,7 +67,11 @@ public class DFAState {
 
 
     public  String getTag(){
-        Iterator iterator = nfaStates.iterator();
+
+        List<NFAState> states =new ArrayList<>();
+        states.addAll(nfaStates);
+        states.sort((a,b)->a.getEdges().size()-b.getEdges().size());
+        Iterator iterator = states.iterator();
         while (iterator.hasNext()){
             NFAState state = (NFAState)iterator.next();
             if(state.getTag()!=null && !state.getTag().equals("")){
